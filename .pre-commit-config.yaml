@@ -1,27 +1,32 @@
 repos:
-- repo: https://github.com/ambv/black
-  rev: 20.8b1
+- repo: local
   hooks:
   - id: black
-    language_version: python3
-- repo: https://github.com/pre-commit/mirrors-mypy
-  rev: v0.782
-  hooks:
+    name: black
+    entry: black
+    language: python
+    types: [python]
   - id: mypy
-- repo: https://gitlab.com/pycqa/flake8
-  rev: 3.8.3
-  hooks:
+    name: mypy
+    entry: mypy
+    language: python
+    types: [python]
+    args: ["--ignore-missing-imports", "--scripts-are-modules"]
   - id: flake8
+    name: flake8
+    entry: flake8
+    language: python
+    types: [python]
+  - id: isort
+    name: isort
+    entry: isort
+    language: python
+    types: [python]
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v3.2.0
   hooks:
   - id: check-toml
   - id: check-yaml
-- repo: https://github.com/pre-commit/mirrors-isort
-  rev: v5.5.3
-  hooks:
-  - id: isort
-    additional_dependencies: [toml]
 - repo: https://github.com/myint/docformatter
   rev: v1.3.1
   hooks:

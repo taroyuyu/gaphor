@@ -69,7 +69,7 @@ def test_commentline_element_connect(create, diagram):
     assert ac.subject in comment.subject.annotatedElement
 
 
-def test_commentline_glie_to_item_with_no_subject(create, diagram):
+def test_commentline_glue_to_item_with_no_subject(create, diagram):
     """Test comment line connecting to comment and actor items."""
     line = create(CommentLineItem)
     gi = create(GeneralizationItem)
@@ -85,8 +85,21 @@ def test_commentline_item_with_no_subject_connect(create, diagram):
 
     connect(line, line.head, comment)
     connect(line, line.tail, gi)
+
     assert diagram.connections.get_connection(line.tail).connected is gi
     assert len(comment.subject.annotatedElement) == 0
+
+
+def test_commentline_reconnect_to_comment(create, diagram):
+    """Test comment line connecting to comment and actor items."""
+    comment = create(CommentItem, Comment)
+    line = create(CommentLineItem)
+    ac = create(ActorItem, UML.Actor)
+
+    connect(line, line.head, comment)
+    connect(line, line.tail, ac)
+
+    assert allow(line, line.head, comment)
 
 
 def test_commentline_element_reconnect(create, diagram):
@@ -242,12 +255,28 @@ def test_commentline_linked_to_same_element_twice(create):
     connect(line1, line1.head, comment)
     connect(line1, line1.tail, clazz)
 
-    assert clazz.subject in comment.subject.annotatedElement
-    assert comment.subject in clazz.subject.comment
-
     # Now add another line
 
     line2 = create(CommentLineItem)
     connect(line2, line2.head, comment)
 
-    assert not allow(line2, line2.tail, clazz)
+    assert allow(line2, line2.tail, clazz)
+
+
+def test_disconnect_commentline_linked_to_same_element_twice(create):
+    """It is not allowed to create two commentlines between the same
+    elements."""
+    clazz = create(ClassItem, UML.Class)
+    comment = create(CommentItem, Comment)
+
+    line1 = create(CommentLineItem)
+    connect(line1, line1.head, comment)
+    connect(line1, line1.tail, clazz)
+
+    line2 = create(CommentLineItem)
+    connect(line2, line2.head, comment)
+    connect(line2, line2.tail, clazz)
+
+    disconnect(line2, line2.head)
+
+    assert clazz.subject in comment.subject.annotatedElement
